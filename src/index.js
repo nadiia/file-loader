@@ -2,11 +2,11 @@
   MIT License http://www.opensource.org/licenses/mit-license.php
   Author Tobias Koppers @sokra
 */
-import path from 'path';
-import loaderUtils from 'loader-utils';
-import storageSingleton from './storage-singleton';
+const path = require('path');
+const loaderUtils = require('loader-utils');
+const storageSingleton = require('./storage-singleton').default;
 
-export default function fileLoader(content) {
+module.exports = function fileLoader(content) {
   if (!this.emitFile) throw new Error('emitFile is required from module system');
 
   const query = loaderUtils.getOptions(this) || {};
@@ -17,8 +17,8 @@ export default function fileLoader(content) {
     publicPath: undefined,
     useRelativePath: false,
     name: '[hash].[ext]',
-    storeEmittedFile: false,
-    storeEmittedFileTarget: null,
+    storeFile: false,
+    storeFileTarget: null,
   };
 
   // options takes precedence over config
@@ -75,15 +75,19 @@ export default function fileLoader(content) {
   }
 
   const storage = storageSingleton.getStorage();
-  const { storeEmittedFile, storeEmittedFileTarget } = config;
+  const { storeFile, storeFileTarget } = config;
   if (query.emitFile === undefined || query.emitFile) {
-    if (storeEmittedFile && (!storeEmittedFileTarget || (storeEmittedFileTarget && this.target === storeEmittedFileTarget))) {
+    // when storeFile param is passed we don't emit a file
+    // but store it to be added added later as an additional asset to a compilation
+    // it allows adding these files in a different compilation
+    if (storeFile && (!storeFileTarget || this.target === storeFileTarget)) {
       storage.addFile(outputPath, content);
+    } else {
+      this.emitFile(outputPath, content);
     }
-    this.emitFile(outputPath, content);
   }
 
   return `module.exports = ${publicPath};`;
-}
+};
 
-export const raw = true;
+module.exports.raw = true;
