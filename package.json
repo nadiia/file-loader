@@ -1,9 +1,11 @@
 {
   "name": "@nadiia/file-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Tobias Koppers @sokra",
   "description": "file loader module for webpack",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "loader-utils": "^1.0.2"
   },
@@ -65,6 +67,9 @@
   },
   "pre-commit": "lint-staged",
   "lint-staged": {
-    "*.js": ["eslint --fix", "git add"]
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
